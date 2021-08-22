@@ -193,8 +193,6 @@ describe('Message from user with pronouns', () => {
 
 		const element = await processLiveMessage(sampleChatMessage);
 
-		console.log(element.outerHTML)
-
 		const pronounsBadge = element.querySelector('[data-provider="pronouns.alejo.io"]');
 		const pronounsBadgeSpan = element.querySelector('span[data-a-target="pr-badge-txt"]');
 
