@@ -10,17 +10,13 @@ const isVoD = (): boolean => /^\/videos\/\d+/.test(window.location.pathname);
 
 const nodeParser = (node: Node) => {
 	if (node instanceof HTMLElement) {
+		Logger.debug(node);
 		if (node.getAttribute("data-test-selector") === "chat-line-message" || node.classList.contains('chat-line__message')) {
-			Logger.debug(node);
 			processLiveMessage(node);
 		} else if (node.classList.contains("chat-line__message--badges") && node.parentElement) {
-			Logger.debug(node);
 			processLiveMessage(node.parentNode as HTMLElement);
 		} else if (isVoD() && node.nodeName.toUpperCase() === "LI") {
-			Logger.debug(node);
 			processVoDMessage(node);
-		} else {
-			Logger.debug(node);
 		}
 	}
 }
