@@ -16,17 +16,13 @@ export async function getPronouns(): Promise<IPronouns> {
 	return p;
 }
 
-export async function getUserPronoun(username: string): Promise<string | undefined> {
+export async function getUserPronoun(username: string): Promise<IUser | undefined> {
 	if (username.length < 1) {
 		return;
 	}
 
 	var res = await get<IUser[]>("users/" + username);
-	let match: IUser | undefined = res.find((user: IUser) => {
+	return res.find((user: IUser) => {
 		return user.login.toLowerCase() === username.toLowerCase();
 	})
-
-	if (match !== undefined) {
-		return match.pronoun_id;
-	}
 }

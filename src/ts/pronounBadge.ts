@@ -1,10 +1,15 @@
 
-export function generatePronounBadge(text: string): HTMLElement {
+export function generatePronounBadge(priamryPronouns: string, alternativePronouns?: string): HTMLElement {
 	let textSpan = document.createElement('span');
 	{
 		textSpan.setAttribute('class', 'chat-badge user-pronoun')
 		textSpan.setAttribute('data-a-target', 'pr-badge-txt')
-		textSpan.textContent = text;
+		if (alternativePronouns !== undefined) {
+			textSpan.textContent = priamryPronouns.split('/')[0] +
+				'/' + alternativePronouns.split('/')[0];
+		} else {
+			textSpan.textContent = priamryPronouns;
+		}
 	}
 
 	let tooltipElm = document.createElement('div');
