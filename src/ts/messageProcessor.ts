@@ -1,5 +1,4 @@
 import { IPronouns } from './types/pronouns';
-import Logger from './logger';
 import * as Selectors from './constants/selectors';
 import * as API from './api/pronouns.alejo.io';
 import { generatePronounBadge } from './pronounBadge';
@@ -44,7 +43,7 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 				pronouns[user.pronoun_id],
 				user.alt_pronoun_id ? pronouns[user.alt_pronoun_id] : undefined
 			);
-				
+			
 			badges.append(badge);
 		}
 	}
@@ -76,7 +75,7 @@ export const processLiveMessage = async (target: HTMLElement): Promise<HTMLEleme
 				pronouns[user.pronoun_id],
 				user.alt_pronoun_id ? pronouns[user.alt_pronoun_id] : undefined
 			);
-				
+			
 			badges.append(badge);
 		}
 	}
