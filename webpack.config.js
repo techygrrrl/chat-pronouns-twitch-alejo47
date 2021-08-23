@@ -28,6 +28,7 @@ module.exports = {
             ".webpack.js",
             ".web.js",
             ".ts",
+            ".tsx",
             ".js",
             ".css"
         ]
@@ -35,7 +36,7 @@ module.exports = {
     module: {
         rules: [
             { test: /\.css$/i, use: [ 'style-loader', 'css-loader' ] },
-            { test: /\.ts$/i, use: [ 'ts-loader' ] },
+            { test: /\.ts(|x)$/i, use: [ 'ts-loader' ] },
             { test: /\.less$/i, use: [ "style-loader" , "css-loader" , "less-loader" ] },
         ],
     },
