@@ -1,5 +1,5 @@
-import { IPronoun, IPronouns } from "../types/pronouns";
-import { IUser } from "../types/users";
+import { IPronouns } from '../types/pronouns';
+import { IUser } from '../types/users';
 
 export const mockUser: IUser = {
 	id: "64697598",
