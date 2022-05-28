@@ -32,6 +32,12 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 	const username: string | null = userElm.getAttribute('data-a-user') || userElm.textContent;
 	if (username !== null) {
 
+		// TODO: Something like while(!pronouns) repeat
+		// There's a race condition here where we could get the username response
+		// before the GET /pronouns response returns
+		// Some code added to return static get-pronouns.json data but that only works 
+		// if the response immediately fails. It usually hangs a while then fails.
+
 		const pronoun: string | undefined = await API.getUserPronoun(username.toLowerCase());
 		if (pronoun !== undefined) {
 
