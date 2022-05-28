@@ -3,8 +3,9 @@ import { generatePronounBadge } from '../pronounBadge';
 
 describe('Function generatePronounBadge', () => {
 	const pronounText = "Some/Pronouns";
+	const pronounKey = "somepronouns"
 
-	var badge = generatePronounBadge(pronounText);
+	var badge = generatePronounBadge(pronounText, pronounKey);
 
 	it('should build base DIV badge', () => {
 		assert(badge instanceof HTMLDivElement, 'be proper node type');

@@ -39,7 +39,7 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 			if (badges === null) {
 				return target;
 			}
-			badges.append(generatePronounBadge(pronouns[pronoun]));
+			badges.append(generatePronounBadge(pronouns[pronoun], pronoun));
 		}
 	}
 
@@ -66,7 +66,7 @@ export const processLiveMessage = async (target: HTMLElement): Promise<HTMLEleme
 				return target;
 			}
 
-			badges.append(generatePronounBadge(pronouns[pronoun]));
+			badges.append(generatePronounBadge(pronouns[pronoun], pronoun));
 		}
 	}
 
