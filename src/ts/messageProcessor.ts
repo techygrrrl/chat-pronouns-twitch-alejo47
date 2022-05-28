@@ -4,6 +4,8 @@ import * as Selectors from './constants/selectors';
 import * as API from './api/pronouns.alejo.io';
 import { generatePronounBadge } from './pronounBadge';
 
+const retryQueue: HTMLElement[] = []
+
 let pronouns: IPronouns;
 
 export const setPronouns = (value: IPronouns) => {
@@ -24,6 +26,12 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 		return target;
 	}
 
+	if (!pronouns) {
+		retryQueue.push(target)
+		console.warn('Alejo pronouns: VOD Message : Adding to retry queue', target)
+		return target
+	}
+
 	const userElm: HTMLElement | null = target.querySelector(Selectors.VOD_CHAT_USERNAME);
 	if (userElm === null) {
 		return target;
@@ -31,13 +39,6 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 
 	const username: string | null = userElm.getAttribute('data-a-user') || userElm.textContent;
 	if (username !== null) {
-
-		// TODO: Something like while(!pronouns) repeat
-		// There's a race condition here where we could get the username response
-		// before the GET /pronouns response returns
-		// Some code added to return static get-pronouns.json data but that only works 
-		// if the response immediately fails. It usually hangs a while then fails.
-
 		const pronoun: string | undefined = await API.getUserPronoun(username.toLowerCase());
 		if (pronoun !== undefined) {
 
@@ -55,6 +56,12 @@ export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElemen
 export const processLiveMessage = async (target: HTMLElement): Promise<HTMLElement> => {
 	if (tagAsProcessed(target)) {
 		return target;
+	}
+
+	if (!pronouns) {
+		retryQueue.push(target)
+		console.warn('Alejo pronouns: Live Message : Adding to retry queue', target)
+		return target
 	}
 
 	const userElm: HTMLElement | null = target.querySelector(Selectors.LIVE_CHAT_DISPLAY_NAME) || target.querySelector(Selectors.FFZ.LIVE_CHAT_DISPLAY_NAME);
@@ -78,3 +85,27 @@ export const processLiveMessage = async (target: HTMLElement): Promise<HTMLEleme
 
 	return target;
 }
+
+const maxRetries = 100
+let retryCount = 0
+
+const intervalId = setInterval(() => {
+	retryCount++
+	if (retryCount >= maxRetries) {
+		console.error('Alejo pronouns: Giving up on retrying')
+		clearInterval(intervalId)
+	}
+
+	if (!pronouns) {
+		console.warn('Alejo pronouns: No pronouns yet. Not retrying.')
+		return
+	}
+
+	while (retryQueue.length) {
+		const target = retryQueue.shift()
+		if (target) {
+			console.log('Alejo pronouns: Reprocessing target', target)
+			processLiveMessage(target)
+		}
+	}
+}, 1000)

@@ -17,9 +17,7 @@ export async function getPronouns(): Promise<IPronouns> {
 		});
 		return p;
 	} catch (e) {
-		// This doesn't result in what is needed. In the event this call fails or doesn't return
-		// before the username check does, you will not see pronouns.
-		console.error('😭 Request to get pronouns from Alejo failed. Using cached data.')
+		console.warn('Alejo pronouns: Request to get pronouns from Alejo failed. Using cached data.')
 		var p: IPronouns = {};
 		getPronounsJson.forEach((pronoun: Pronoun) => {
 			p[pronoun.name] = pronoun.display;
