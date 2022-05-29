@@ -2,6 +2,8 @@
 
 See [Changes](#changes) below for changes from the original.
 
+---
+
 ``` bash
 # Install dependencies
 yarn
