@@ -18,6 +18,7 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {},
     "typeRoots": [

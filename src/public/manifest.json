@@ -1,7 +1,11 @@
 {
 	"name": "Twitch Chat pronouns",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Add Pronouns to Twitch Chat",
+	"icons": {
+    "48": "icons/pronouns-alejo-icon.png",
+    "128": "icons/pronouns-alejo-icon128.png"
+  },
 	"content_scripts": [
 		{
 			"matches": [

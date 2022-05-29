@@ -1,5 +1,12 @@
 import Pronoun, { IPronouns } from "../types/pronouns";
 import { IUser } from "../types/users";
+import getPronounsJson from '../../mock-data/get-pronouns.json'
+
+type PronounValue = {
+	value?: string
+}
+const userPronounsCache: Record<string, PronounValue> = {
+}
 
 type PronounValue = {
 	value?: string
@@ -14,12 +21,21 @@ async function get<T = JSON>(endpoint: string): Promise<T> {
 }
 	
 export async function getPronouns(): Promise<IPronouns> {
-	var res: Pronoun[] = await get<Pronoun[]>("pronouns")
-	var p: IPronouns = {};
-	res.forEach((pronoun: Pronoun) => {
-		p[pronoun.name] = pronoun.display;
-	});
-	return p;
+	try {
+		var res: Pronoun[] = await get<Pronoun[]>("pronouns")
+		var p: IPronouns = {};
+		res.forEach((pronoun: Pronoun) => {
+			p[pronoun.name] = pronoun.display;
+		});
+		return p;
+	} catch (e) {
+		console.warn('Alejo pronouns: Request to get pronouns from Alejo failed. Using cached data.')
+		var p: IPronouns = {};
+		getPronounsJson.forEach((pronoun: Pronoun) => {
+			p[pronoun.name] = pronoun.display;
+		});
+		return p
+	}
 }
 
 export async function getUserPronoun(username: string): Promise<string | undefined> {
