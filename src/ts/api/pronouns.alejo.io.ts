@@ -8,12 +8,6 @@ type PronounValue = {
 const userPronounsCache: Record<string, PronounValue> = {
 }
 
-type PronounValue = {
-	value?: string
-}
-const userPronounsCache: Record<string, PronounValue> = {
-}
-
 async function get<T = JSON>(endpoint: string): Promise<T> {
 	return await fetch(process.env.BASE_API_URL + endpoint).then(async (res: Response) => {
 		return res.json() as Promise<T>;
