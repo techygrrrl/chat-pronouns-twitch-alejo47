@@ -37,7 +37,8 @@ yarn watch
 
 Example preview in chat:
 
-![](screenshots/pronouns-alejo-preview.png)
+![](screenshots/pronouns-alejo-preview-dark.png)
+![](screenshots/pronouns-alejo-preview-light.png)
 
 The extension uses this icon:
 
