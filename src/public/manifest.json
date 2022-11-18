@@ -21,8 +21,8 @@
 			"all_frames": true
 		}
 	],
-	"permissions": [
+	"host_permissions": [
 		"https://pronouns.alejo.io/*"
 	],
-	"manifest_version": 2
+	"manifest_version": 3
 }
