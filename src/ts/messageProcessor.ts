@@ -1,111 +1,171 @@
-import { IPronouns } from './types/pronouns';
-import Logger from './logger';
-import * as Selectors from './constants/selectors';
-import * as API from './api/pronouns.alejo.io';
-import { generatePronounBadge } from './pronounBadge';
+import { PronounsMap } from "src/ts/types/deprecated/pronouns";
+import * as Selectors from "src/ts/constants/selectors";
+import * as deprecatedAPI from "src/ts/api/pronouns.alejo.io";
+import * as newAPI from "src/ts/api/api.pronouns.alejo.io";
+import { generatePronounBadge } from "src/ts/pronounBadge";
+import { GetPronounsResponse } from "./types/pronouns";
+import { parsePronounGroupToString } from "./helpers";
+
 
 const retryQueue: HTMLElement[] = []
+let deprecatedPronouns: PronounsMap;
+let newPronouns: GetPronounsResponse;
+let _IsNewAPIAvailable = false;
 
-let pronouns: IPronouns;
 
-export const setPronouns = (value: IPronouns) => {
-	pronouns = value
-}
+export const setDeprecatedPronouns = (value: PronounsMap) => {
+  deprecatedPronouns = value;
+};
 
-export const tagAsProcessed = (target: HTMLElement, val: string = 'processing'): boolean => {
-	if (target.getAttribute('pronouns') === null) {
-		target.setAttribute('pronouns', '');
-		return false;
-	} else {
-		return true;
-	}
-}
+export const setNewPronouns = (value: GetPronounsResponse) => {
+  newPronouns = value;
+};
 
-export const processVoDMessage = async (target: HTMLElement): Promise<HTMLElement> => {
-	if (tagAsProcessed(target)) {
-		return target;
-	}
+export const checkForNewAPI = async () => {
+  _IsNewAPIAvailable = await newAPI.getHealthcheck();
+  return _IsNewAPIAvailable;
+};
 
-	if (!pronouns) {
-		retryQueue.push(target)
-		console.warn('Alejo pronouns: VOD Message : Adding to retry queue', target)
-		return target
-	}
+export const isNewAPIAvailable = () => _IsNewAPIAvailable;
 
-	const userElm: HTMLElement | null = target.querySelector(Selectors.VOD_CHAT_USERNAME);
-	if (userElm === null) {
-		return target;
-	}
+export const getHandleInstance = () => {
+  return isNewAPIAvailable() ? newAPI : deprecatedAPI;
+};
 
-	const username: string | null = userElm.getAttribute('data-a-user') || userElm.textContent;
-	if (username !== null) {
-		const pronoun: string | undefined = await API.getUserPronoun(username.toLowerCase());
-		if (pronoun !== undefined) {
+export const tagAsProcessed = (
+  target: HTMLElement,
+) => {
+  if (target.getAttribute("pronouns") === null) {
+    target.setAttribute("pronouns", "");
+    return false;
+  } else {
+    return true;
+  }
+};
 
-			const badges = target.querySelector(Selectors.VOD_CHAT_BADGES);
-			if (badges === null) {
-				return target;
-			}
-			badges.append(generatePronounBadge(pronouns[pronoun], pronoun));
-		}
-	}
+export const processVoDMessage = async (
+  target: HTMLElement,
+): Promise<HTMLElement> => {
+  if (tagAsProcessed(target)) {
+    return target;
+  }
 
-	return target;
-}
+  const userElm: HTMLElement | null = target.querySelector(
+    Selectors.VOD_CHAT_USERNAME,
+  );
+  if (userElm === null) {
+    return target;
+  }
 
-export const processLiveMessage = async (target: HTMLElement): Promise<HTMLElement> => {
-	if (tagAsProcessed(target)) {
-		return target;
-	}
+  const username: string | null = userElm.getAttribute("data-a-user") ||
+    userElm.textContent;
+  if (username !== null) {
+    if (isNewAPIAvailable()) {
+      const user = await newAPI.getUser(username.toLowerCase());
+      if (user !== undefined) {
+        const badges = target.querySelector(Selectors.VOD_CHAT_BADGES);
+        if (badges === null) {
+          return target;
+        }
 
-	if (!pronouns) {
-		retryQueue.push(target)
-		console.warn('Alejo pronouns: Live Message : Adding to retry queue', target)
-		return target
-	}
+        badges.insertAdjacentHTML(
+          "beforeend",
+          generatePronounBadge(
+            parsePronounGroupToString(
+              newPronouns[user.pronoun_id],
+              user.alt_pronoun_id
+                ? newPronouns[user.alt_pronoun_id]
+                : undefined,
+            ),
+            user.pronoun_id,
+          ),
+        );
+      }
+    } else {
+      const pronoun: string | undefined = await deprecatedAPI.getUserDeprecated(
+        username.toLowerCase(),
+      );
+      if (pronoun !== undefined) {
+        const badges = target.querySelector(Selectors.VOD_CHAT_BADGES);
+        if (badges === null) {
+          return target;
+        }
 
-	const userElm: HTMLElement | null = target.querySelector(Selectors.LIVE_CHAT_DISPLAY_NAME) || target.querySelector(Selectors.FFZ.LIVE_CHAT_DISPLAY_NAME);
-	if (userElm === null) {
-		return target;
-	}
+        badges.insertAdjacentHTML(
+          "beforeend",
+          generatePronounBadge(deprecatedPronouns[pronoun], pronoun),
+        );
+      }
+    }
+  }
 
-	const username: string | null = userElm.getAttribute('data-a-user') || userElm.textContent;
-	if (username !== null) {
+  return target;
+};
 
-		const pronoun: string | undefined = await API.getUserPronoun(username.toLowerCase());
-		if (pronoun !== undefined) {
-			const badges = target.querySelector(`${Selectors.LIVE_CHAT_BADGES},${Selectors.FFZ.LIVE_CHAT_BADGES}`);
-			if (badges === null) {
-				return target;
-			}
+export const processLiveMessage = async (
+  target: HTMLElement,
+): Promise<HTMLElement> => {
+  if (tagAsProcessed(target)) {
+    return target;
+  }
 
-			badges.append(generatePronounBadge(pronouns[pronoun], pronoun));
-		}
-	}
+  const userElm: HTMLElement | null =
+    target.querySelector(Selectors.LIVE_CHAT_DISPLAY_NAME) ||
+    target.querySelector(Selectors.FFZ.LIVE_CHAT_DISPLAY_NAME);
+  if (userElm === null) {
+    return target;
+  }
+  const username = userElm.getAttribute("data-a-user") ||
+    userElm.textContent;
+  if (username !== null) {
+    if (isNewAPIAvailable()) {
+      const pronouns = await newAPI.getUser(
+        username.toLowerCase(),
+      );
+      if (pronouns !== undefined) {
+        const badges = target.querySelector(
+          `${Selectors.LIVE_CHAT_BADGES},${Selectors.FFZ.LIVE_CHAT_BADGES}`,
+        );
+        if (badges === null) {
+          return target;
+        }
 
-	return target;
-}
+        let prettyPrint: string = newPronouns[pronouns.pronoun_id].subject;
 
-const maxRetries = 100
-let retryCount = 0
+        if (!newPronouns[pronouns.pronoun_id].singular) {
+          if (pronouns.alt_pronoun_id) {
+            prettyPrint += "/" + newPronouns[pronouns.alt_pronoun_id].subject;
+          } else {
+            prettyPrint += "/" + newPronouns[pronouns.pronoun_id].object;
+          }
+        }
 
-const intervalId = setInterval(() => {
-	retryCount++
-	if (retryCount >= maxRetries) {
-		console.error('Alejo pronouns: Giving up on retrying')
-		clearInterval(intervalId)
-	}
+        const badgeHTML = generatePronounBadge(prettyPrint, pronouns.pronoun_id);
 
-	if (!pronouns) {
-		console.warn('Alejo pronouns: No pronouns yet. Not retrying.')
-		return
-	}
+        badges.insertAdjacentHTML(
+          "beforeend",
+          badgeHTML,
+        );
+      }
+    } else {
+      const pronoun: string | undefined = await deprecatedAPI.getUserDeprecated(
+        username.toLowerCase(),
+      );
+      if (pronoun !== undefined) {
+        const badges = target.querySelector(
+          `${Selectors.LIVE_CHAT_BADGES},${Selectors.FFZ.LIVE_CHAT_BADGES}`,
+        );
+        if (badges === null) {
+          return target;
+        }
 
-	while (retryQueue.length) {
-		const target = retryQueue.shift()
-		if (target) {
-			console.log('Alejo pronouns: Reprocessing target', target)
-			processLiveMessage(target)
-		}
-	}
-}, 1000)
+        badges.insertAdjacentHTML(
+          "beforeend",
+          generatePronounBadge(deprecatedPronouns[pronoun], pronoun),
+        );
+      }
+    }
+  }
+
+  return target;
+};

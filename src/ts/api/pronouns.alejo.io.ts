@@ -1,57 +1,59 @@
-import Pronoun, { IPronouns } from "../types/pronouns";
-import { IUser } from "../types/users";
-import getPronounsJson from '../../mock-data/get-pronouns.json'
+import { PronounValidator } from "src/ts/types/deprecated/pronouns";
+import { UserValidator } from "src/ts/types/deprecated/users";
+import { z } from "zod";
 
-type PronounValue = {
-	value?: string
-}
-const userPronounsCache: Record<string, PronounValue> = {
-}
+export const getDeprecated = async <T>(
+  endpoint: string,
+  validator: z.ZodType<T>,
+  init?: RequestInit,
+) => {
+  const url = new URL("https://pronouns.alejo.io/api");
 
-async function get<T = JSON>(endpoint: string): Promise<T> {
-	return await fetch(process.env.BASE_API_URL + endpoint).then(async (res: Response) => {
-		return res.json() as Promise<T>;
-	})
-}
-	
-export async function getPronouns(): Promise<IPronouns> {
-	try {
-		var res: Pronoun[] = await get<Pronoun[]>("pronouns")
-		var p: IPronouns = {};
-		res.forEach((pronoun: Pronoun) => {
-			p[pronoun.name] = pronoun.display;
-		});
-		return p;
-	} catch (e) {
-		console.warn('Alejo pronouns: Request to get pronouns from Alejo failed. Using cached data.')
-		var p: IPronouns = {};
-		getPronounsJson.forEach((pronoun: Pronoun) => {
-			p[pronoun.name] = pronoun.display;
-		});
-		return p
-	}
-}
+  url.pathname =
+    `${url.pathname}${(endpoint[0] === "/" ? endpoint : `/${endpoint}`)}`;
 
-export async function getUserPronoun(username: string): Promise<string | undefined> {
-	if (username.length < 1) {
-		return;
-	}
+  try {
+    const res = await fetch(url.toString(), init);
 
-	const cachedPronoun = userPronounsCache[username]
-	if (cachedPronoun) {
-		return cachedPronoun.value
-	}
+    const resJson = await res.json();
 
-	var res = await get<IUser[]>("users/" + username);
-	let match: IUser | undefined = res.find((user: IUser) => {
-		return user.login.toLowerCase() === username.toLowerCase();
-	})
+    const validation = validator.safeParse(resJson);
+    if (!validation.success) {
+      return undefined;
+    } else {
+      return validation.data;
+    }
+  } catch {
+    return undefined;
+  }
+};
 
-	userPronounsCache[username] = {
-		value: match?.pronoun_id
-	}
+export const getPronounsDeprecated = async () => {
+  const res = await getDeprecated("/pronouns", z.array(PronounValidator));
+  return res
+    ? res.reduce<Record<string, string>>((p, c) => {
+      p[c.name] = c.display;
+      return p;
+    }, {})
+    : {};
+};
 
-	if (match !== undefined) {
-		return match.pronoun_id;
-	}
-}
+export const getUserDeprecated = async (
+  username: string,
+) => {
+  if (username.length < 1) {
+    return;
+  }
+
+  const res = await getDeprecated("users/" + username, z.array(UserValidator));
+
+  if (!res) {
+    return undefined;
+  }
+
+  const match = res.find((user) => {
+    return user.login.toLowerCase() === username.toLowerCase();
+  });
+
+  return match !== undefined ? match.pronoun_id : undefined;
+};

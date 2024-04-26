@@ -1,28 +1,41 @@
 {
-	"name": "Twitch Chat pronouns",
-	"version": "0.3.0",
-	"description": "Add Pronouns to Twitch Chat",
+  "name": "Twitch Chat pronouns",
+  "version": "0.2.2",
+  "description": "Add Pronouns to Twitch Chat",
 	"icons": {
     "48": "icons/pronouns-alejo-icon.png",
     "128": "icons/pronouns-alejo-icon128.png"
   },
-	"content_scripts": [
-		{
-			"matches": [
-				"https://www.twitch.tv/*",
-				"https://twitch.tv/*",
-				"https://dashboard.twitch.tv/u/*/stream-manager",
-				"https://dashboard.twitch.tv/popout/u/*/stream-manager/chat"
-			],
-			"js": [
-				"./bundle.js"
-			],
-			"run_at": "document_end",
-			"all_frames": true
-		}
-	],
-	"host_permissions": [
-		"https://pronouns.alejo.io/*"
-	],
-	"manifest_version": 3
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.twitch.tv/*",
+        "https://twitch.tv/*",
+        "https://dashboard.twitch.tv/u/*/stream-manager",
+        "https://dashboard.twitch.tv/popout/u/*/stream-manager/chat"
+      ],
+      "js": [
+        "./bundle.js"
+      ],
+      "css": [
+        "./bundle.css"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "host_permissions": [
+    "https://dashboard.twitch.tv/popout/u/*/stream-manager/chat",
+    "https://dashboard.twitch.tv/u/*/stream-manager",
+    "https://pr.alejo.io/*",
+    "https://pronouns.alejo.io/*",
+    "https://twitch.tv/*",
+    "https://www.twitch.tv/*"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{5ac8c0a3-ce21-4c47-972d-b45e685cca5d}"
+    }
+  },
+  "manifest_version": 3
 }
