@@ -1,66 +1,80 @@
-[
-  {
+{
+  "aeaer": {
     "name": "aeaer",
-    "display": "Ae/Aer"
+    "subject": "Ae",
+    "object": "Aer",
+    "singular": false
   },
-  {
+  "any": {
     "name": "any",
-    "display": "Any"
+    "subject": "Any",
+    "object": "Any",
+    "singular": true
   },
-  {
+  "eem": {
     "name": "eem",
-    "display": "E/Em"
+    "subject": "E",
+    "object": "Em",
+    "singular": false
   },
-  {
+  "faefaer": {
     "name": "faefaer",
-    "display": "Fae/Faer"
+    "subject": "Fae",
+    "object": "Faer",
+    "singular": false
   },
-  {
+  "hehim": {
     "name": "hehim",
-    "display": "He/Him"
+    "subject": "He",
+    "object": "Him",
+    "singular": false
   },
-  {
-    "name": "heshe",
-    "display": "He/She"
-  },
-  {
-    "name": "hethem",
-    "display": "He/They"
-  },
-  {
+  "itits": {
     "name": "itits",
-    "display": "It/Its"
+    "subject": "It",
+    "object": "Its",
+    "singular": false
   },
-  {
+  "other": {
     "name": "other",
-    "display": "Other"
+    "subject": "Other",
+    "object": "Other",
+    "singular": true
   },
-  {
+  "perper": {
     "name": "perper",
-    "display": "Per/Per"
+    "subject": "Per",
+    "object": "Per",
+    "singular": false
   },
-  {
+  "sheher": {
     "name": "sheher",
-    "display": "She/Her"
+    "subject": "She",
+    "object": "Her",
+    "singular": false
   },
-  {
-    "name": "shethem",
-    "display": "She/They"
-  },
-  {
+  "theythem": {
     "name": "theythem",
-    "display": "They/Them"
+    "subject": "They",
+    "object": "Them",
+    "singular": false
   },
-  {
+  "vever": {
     "name": "vever",
-    "display": "Ve/Ver"
+    "subject": "Ve",
+    "object": "Ver",
+    "singular": false
   },
-  {
+  "xexem": {
     "name": "xexem",
-    "display": "Xe/Xem"
+    "subject": "Xe",
+    "object": "Xem",
+    "singular": false
   },
-  {
+  "ziehir": {
     "name": "ziehir",
-    "display": "Zie/Hir"
+    "subject": "Zie",
+    "object": "Hir",
+    "singular": false
   }
-]
+}

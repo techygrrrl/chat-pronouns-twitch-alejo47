@@ -1,18 +1,17 @@
-export interface IPronoun {
-	name: string
-	display: string
-}
+import { z } from "zod";
 
-export interface IPronouns {
-	[key: string]: string
-}
+export const PronounGroupValidator = z.object({
+  name: z.string(),
+  subject: z.string(),
+  object: z.string(),
+  singular: z.boolean(),
+});
 
-export default class Pronoun implements IPronoun {
-	name: string
-	display: string
+export const GetPronounsResponseValidator = z.record(
+  z.string(),
+  PronounGroupValidator,
+);
 
-	constructor(name?: string, display?: string) {
-		this.name = name || ""
-		this.display = display || ""
-	}
-}
+export type PronounGroup = z.infer<typeof PronounGroupValidator>;
+
+export type GetPronounsResponse = z.infer<typeof GetPronounsResponseValidator>;
