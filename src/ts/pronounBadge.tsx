@@ -17,7 +17,7 @@ export function generatePronounBadge(text: string, pronounKey: string) {
       >
         {text}
       </span>
-      <div className="pr-tooltip" role="tooltip">Pronouns(s)</div>
+      <div className="pr-tooltip" role="tooltip">Pronouns</div>
     </div>,
   );
 }
