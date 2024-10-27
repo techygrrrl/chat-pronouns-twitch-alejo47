@@ -29,7 +29,8 @@ const nodeParser = (node: Node) => {
   }
 
   if (
-    node.getAttribute("data-test-selector") === "chat-line-message" ||
+    node.getAttribute("data-a-selector") === "chat-line-message" ||
+    node.querySelector("[data-a-target='chat-line-message']") ||
     node.classList.contains("chat-line__message")
   ) {
     Logger.debug(node);

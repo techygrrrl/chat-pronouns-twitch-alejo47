@@ -63,23 +63,24 @@ export const processVoDMessage = async (
     if (isNewAPIAvailable()) {
       const user = await newAPI.getUser(username.toLowerCase());
       if (user !== undefined) {
-        const badges = target.querySelector(Selectors.VOD_CHAT_BADGES);
-        if (badges === null) {
-          return target;
+        const usernameElement = target.querySelector(Selectors.VOD_CHAT_USERNAME)
+        if (usernameElement == null) {
+          console.log('No username element')
+          return target
         }
 
-        badges.insertAdjacentHTML(
-          "beforeend",
-          generatePronounBadge(
-            parsePronounGroupToString(
-              newPronouns[user.pronoun_id],
-              user.alt_pronoun_id
-                ? newPronouns[user.alt_pronoun_id]
-                : undefined,
-            ),
-            user.pronoun_id,
+        console.log('username element', usernameElement)
+        const generatedBadge = generatePronounBadge(
+          parsePronounGroupToString(
+            newPronouns[user.pronoun_id],
+            user.alt_pronoun_id
+              ? newPronouns[user.alt_pronoun_id]
+              : undefined,
           ),
-        );
+          user.pronoun_id,
+        )
+
+        usernameElement.insertAdjacentHTML("beforeend", generatedBadge);
       }
     } else {
       const pronoun: string | undefined = await deprecatedAPI.getUserDeprecated(
